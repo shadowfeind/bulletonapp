@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import PostAuthor from "./PostAuthor";
+import PostExcerpts from "./PostExcerpts";
+
 import { fetchPosts } from "./postSlice";
-import ReactionButtons from "./ReactionButtons";
-import TimeAgo from "./TimeAgo";
 
 const PostList = () => {
   const { posts, status, error } = useSelector((state) => state.posts);
@@ -13,21 +12,21 @@ const PostList = () => {
     if (status === "idle") {
       dispatch(fetchPosts());
     }
-  }, []);
+  }, [status, dispatch]);
 
-  const orderedPosts = posts
-    ?.slice()
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  const content = orderedPosts?.map((post) => (
-    <article key={post.id}>
-      <h3>{post.title}</h3>
-      <p>{post.body.substring(0, 100)}</p>
-      <PostAuthor userId={post.user} />
-      <TimeAgo time={post.date} />
-      <ReactionButtons post={post} />
-    </article>
-  ));
+  let content =
+    status === "loading" ? (
+      <h2>Loading... </h2>
+    ) : status === "succeeded" ? (
+      posts
+        ?.slice(0, 100)
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .map((post) => <PostExcerpts key={post.id} post={post} />)
+    ) : status === "failed" ? (
+      <h2>{error}</h2>
+    ) : (
+      <div></div>
+    );
 
   return (
     <>

@@ -9,7 +9,7 @@ const PostForm = () => {
 
   const canSave = user && title.trim() && content.trim();
 
-  const users = useSelector((state) => state.users);
+  const { users } = useSelector((state) => state.users);
 
   const dispatch = useDispatch();
 
