@@ -1,11 +1,19 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import PostAuthor from "./PostAuthor";
+import { fetchPosts } from "./postSlice";
 import ReactionButtons from "./ReactionButtons";
 import TimeAgo from "./TimeAgo";
 
 const PostList = () => {
-  const posts = useSelector((state) => state.posts);
+  const { posts, status, error } = useSelector((state) => state.posts);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchPosts());
+    }
+  }, []);
 
   const orderedPosts = posts
     ?.slice()
@@ -14,7 +22,7 @@ const PostList = () => {
   const content = orderedPosts?.map((post) => (
     <article key={post.id}>
       <h3>{post.title}</h3>
-      <p>{post.content.substring(0, 100)}</p>
+      <p>{post.body.substring(0, 100)}</p>
       <PostAuthor userId={post.user} />
       <TimeAgo time={post.date} />
       <ReactionButtons post={post} />
